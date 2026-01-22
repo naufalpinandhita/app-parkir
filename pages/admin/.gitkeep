@@ -1,0 +1,6 @@
+# Folder untuk halaman Admin
+# - user.php (CRUD User)
+# - tarif.php (CRUD Tarif)
+# - area.php (CRUD Area Parkir)
+# - kendaraan.php (CRUD Kendaraan)
+# - log.php (Log Aktivitas)
