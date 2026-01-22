@@ -1,4 +1,4 @@
-# 🚗 Aplikasi Parkir
+# Aplikasi Parkir
 
 Aplikasi manajemen parkir berbasis web dengan 3 level pengguna (Admin, Petugas, Owner).
 
@@ -149,7 +149,3 @@ tb_area_parkir (id_area, nama_area, kapasitas, terisi)
 ## 📝 Lisensi
 
 Proyek ini dibuat untuk keperluan Uji Kompetensi.
-
-## 👨‍💻 Developer
-
-Dibuat dengan ❤️ menggunakan PHP, MySQL, dan Bootstrap.
