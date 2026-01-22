@@ -29,8 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($check) > 0) {
             $error = 'Username sudah digunakan!';
         } else {
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $query = "INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif) 
-                      VALUES ('$nama_lengkap', '$username', '$password', '$role', $status_aktif)";
+                      VALUES ('$nama_lengkap', '$username', '$hashed_password', '$role', $status_aktif)";
             if (mysqli_query($conn, $query)) {
                 // Log aktivitas
                 $logQuery = "INSERT INTO tb_log_aktivitas (id_user, aktivitas) VALUES ({$_SESSION['user_id']}, 'Menambah user: $username')";
@@ -55,8 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $query = "UPDATE tb_user SET nama_lengkap = '$nama_lengkap', username = '$username', 
                           role = '$role', status_aktif = $status_aktif WHERE id_user = $id";
             } else {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 $query = "UPDATE tb_user SET nama_lengkap = '$nama_lengkap', username = '$username', 
-                          password = '$password', role = '$role', status_aktif = $status_aktif WHERE id_user = $id";
+                          password = '$hashed_password', role = '$role', status_aktif = $status_aktif WHERE id_user = $id";
             }
             
             if (mysqli_query($conn, $query)) {

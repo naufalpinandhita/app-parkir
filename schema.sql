@@ -130,9 +130,9 @@ INSERT INTO tb_tarif (jenis_kendaraan, tarif_per_jam) VALUES
 
 -- Insert user admin default (password: admin123 - HARUS di-hash di aplikasi)
 INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif) VALUES
-('Administrator', 'admin', 'admin123', 'admin', 1),
-('Petugas Parkir', 'petugas', 'petugas123', 'petugas', 1),
-('Owner Parkir', 'owner', 'owner123', 'owner', 1);
+('Administrator', 'admin', '$2y$10$grbT0JAC1aNu4nNRDO8Okuy1ObLYdTx06kXCTLJcA83Q7HZ37tuaa', 'admin', 1),
+('Petugas Parkir', 'petugas', '$2y$10$qm16Xy7TnQhLPzPPk36OcevtNd6FJI54XE/lr/jH5FBhSZaCR2p32', 'petugas', 1),
+('Owner Parkir', 'owner', '$2y$10$GzA3yvrV/9HqC3qC9yNozu4RbyeoRhvnpjAI0ZsDDAmrRCAJGOFU6', 'owner', 1);
 
 -- Insert area parkir default
 INSERT INTO tb_area_parkir (nama_area, kapasitas, terisi) VALUES
