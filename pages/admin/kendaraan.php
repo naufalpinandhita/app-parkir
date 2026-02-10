@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['admin']);
 
-$pageTitle = 'Data Kendaraan - ' . APP_NAME;
+$pageTitle = 'Data Kendaraan';
 
 // Handle Actions
 $action = $_GET['action'] ?? 'list';
@@ -93,6 +93,7 @@ $totalPages = ceil($totalData / $limit);
 $kendaraanList = mysqli_query($conn, "SELECT * FROM tb_kendaraan ORDER BY id_kendaraan DESC LIMIT $limit OFFSET $offset");
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 

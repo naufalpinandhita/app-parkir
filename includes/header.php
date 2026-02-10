@@ -14,4 +14,4 @@
     <!-- Custom CSS -->
     <link href="<?= APP_URL ?>/assets/css/style.css" rel="stylesheet">
 </head>
-<body>
+<body class="app-layout">

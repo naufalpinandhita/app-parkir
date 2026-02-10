@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['admin']);
 
-$pageTitle = 'Log Aktivitas - ' . APP_NAME;
+$pageTitle = 'Log Aktivitas';
 
 // Filter
 $filterUser = isset($_GET['user']) ? (int)$_GET['user'] : '';
@@ -42,6 +42,7 @@ $logList = mysqli_query($conn, $logQuery);
 $users = mysqli_query($conn, "SELECT id_user, nama_lengkap FROM tb_user ORDER BY nama_lengkap");
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 

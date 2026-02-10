@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================
- * HALAMAN LOGIN
+ * HALAMAN LOGIN - Modern Black & White
  * =============================================
  */
 require_once __DIR__ . '/../config/app.php';
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (mysqli_num_rows($result) == 1) {
         $user = mysqli_fetch_assoc($result);
         
-        // Verifikasi password (untuk sementara plain text, nanti ganti dengan password_verify)
+        // Verifikasi password
         if ($password == $user['password']) {
             // Set session
             $_SESSION['user_id'] = $user['id_user'];
@@ -64,14 +64,16 @@ $pageTitle = 'Login - ' . APP_NAME;
 <body>
     <div class="login-container">
         <div class="card login-card">
-            <div class="card-header text-center">
-                <i class="bi bi-car-front-fill text-primary" style="font-size: 3rem;"></i>
-                <h4 class="mt-2 mb-0"><?= APP_NAME ?></h4>
-                <small class="text-muted">Silakan login untuk melanjutkan</small>
+            <div class="card-header">
+                <i class="bi bi-car-front-fill" style="font-size: 48px; color: var(--color-black);"></i>
+                <h4 class="mt-3 mb-1 fw-bold"><?= APP_NAME ?></h4>
+                <p class="text-muted mb-0" style="font-size: 14px;">Silakan login untuk melanjutkan</p>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body">
                 <?php if ($error): ?>
-                <div class="alert alert-danger"><?= $error ?></div>
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-circle me-2"></i><?= $error ?>
+                </div>
                 <?php endif; ?>
                 
                 <?= getFlash() ?>
@@ -80,17 +82,21 @@ $pageTitle = 'Login - ' . APP_NAME;
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <span class="input-group-text bg-white" style="border-right: 0;">
+                                <i class="bi bi-person"></i>
+                            </span>
                             <input type="text" class="form-control" id="username" name="username" 
-                                   placeholder="Masukkan username" required autofocus>
+                                   placeholder="Masukkan username" required autofocus style="border-left: 0;">
                         </div>
                     </div>
                     <div class="mb-4">
                         <label for="password" class="form-label">Password</label>
                         <div class="input-group">
-                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <span class="input-group-text bg-white" style="border-right: 0;">
+                                <i class="bi bi-lock"></i>
+                            </span>
                             <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Masukkan password" required>
+                                   placeholder="Masukkan password" required style="border-left: 0;">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">
@@ -98,7 +104,7 @@ $pageTitle = 'Login - ' . APP_NAME;
                     </button>
                 </form>
             </div>
-            <div class="card-footer text-center text-muted">
+            <div class="card-footer">
                 <small>&copy; <?= date('Y') ?> <?= APP_NAME ?></small>
             </div>
         </div>

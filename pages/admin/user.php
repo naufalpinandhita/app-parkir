@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['admin']);
 
-$pageTitle = 'Data User - ' . APP_NAME;
+$pageTitle = 'Data User';
 
 // Handle Actions
 $action = $_GET['action'] ?? 'list';
@@ -103,6 +103,7 @@ if ($action == 'edit' && $id) {
 $users = mysqli_query($conn, "SELECT * FROM tb_user ORDER BY id_user DESC");
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 
@@ -248,6 +249,7 @@ include __DIR__ . '/../../includes/navbar.php';
         </div>
         <?php endif; ?>
     </div>
+</div>
 </div>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>

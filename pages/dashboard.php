@@ -6,7 +6,7 @@
  */
 require_once __DIR__ . '/../includes/auth_check.php';
 
-$pageTitle = 'Dashboard - ' . APP_NAME;
+$pageTitle = 'Dashboard';
 $userRole = currentUser('role');
 
 // Query statistik
@@ -24,18 +24,15 @@ $recentQuery = "SELECT t.*, k.plat_nomor, k.jenis_kendaraan, a.nama_area
 $recentTransaksi = mysqli_query($conn, $recentQuery);
 
 include __DIR__ . '/../includes/header.php';
+include __DIR__ . '/../includes/sidebar.php';
 include __DIR__ . '/../includes/navbar.php';
 ?>
 
-<div class="main-content">
-    <div class="container-fluid">
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="mb-0">Dashboard</h4>
-                <small class="text-muted">Selamat datang, <?= escape(currentUser('nama_lengkap')) ?>!</small>
-            </div>
-            <span class="badge bg-primary fs-6"><?= date('l, d F Y') ?></span>
+    <div class="main-content">
+        <!-- Welcome Section -->
+        <div class="mb-4">
+            <h2 class="fw-bold mb-2" style="font-size: 28px;">Selamat Datang, <?= escape(currentUser('nama_lengkap')) ?>!</h2>
+            <p class="text-muted mb-0"><?= date('l, d F Y') ?></p>
         </div>
         
         <?= getFlash() ?>
@@ -44,52 +41,55 @@ include __DIR__ . '/../includes/navbar.php';
         <div class="row g-4 mb-4">
             <div class="col-md-6 col-xl-3">
                 <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+                    <div class="card-body">
+                        <div class="stat-content">
+                            <div class="stat-value"><?= $totalKendaraan ?></div>
+                            <div class="stat-label">TOTAL KENDARAAN</div>
+                        </div>
+                        <div class="stat-icon">
                             <i class="bi bi-car-front"></i>
                         </div>
-                        <div>
-                            <div class="stat-value text-primary"><?= $totalKendaraan ?></div>
-                            <div class="stat-label">Total Kendaraan</div>
-                        </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6 col-xl-3">
                 <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+                    <div class="card-body">
+                        <div class="stat-content">
+                            <div class="stat-value"><?= $kendaraanParkir ?></div>
+                            <div class="stat-label">SEDANG PARKIR</div>
+                        </div>
+                        <div class="stat-icon">
                             <i class="bi bi-p-circle"></i>
                         </div>
-                        <div>
-                            <div class="stat-value text-success"><?= $kendaraanParkir ?></div>
-                            <div class="stat-label">Sedang Parkir</div>
-                        </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6 col-xl-3">
                 <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon bg-info bg-opacity-10 text-info me-3">
+                    <div class="card-body">
+                        <div class="stat-content">
+                            <div class="stat-value"><?= $transaksiHariIni ?></div>
+                            <div class="stat-label">TRANSAKSI HARI INI</div>
+                        </div>
+                        <div class="stat-icon">
                             <i class="bi bi-receipt"></i>
                         </div>
-                        <div>
-                            <div class="stat-value text-info"><?= $transaksiHariIni ?></div>
-                            <div class="stat-label">Transaksi Hari Ini</div>
-                        </div>
                     </div>
                 </div>
             </div>
+            
             <div class="col-md-6 col-xl-3">
-                <div class="card stat-card">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
-                            <i class="bi bi-cash"></i>
+                <div class="card stat-card stat-card-emphasized">
+                    <div class="card-body">
+                        <div class="stat-content">
+                            <div class="stat-value" style="font-size: 24px;"><?= formatRupiah($pendapatanHariIni) ?></div>
+                            <div class="stat-label">PENDAPATAN HARI INI</div>
                         </div>
-                        <div>
-                            <div class="stat-value text-warning"><?= formatRupiah($pendapatanHariIni) ?></div>
-                            <div class="stat-label">Pendapatan Hari Ini</div>
+                        <div class="stat-icon">
+                            <i class="bi bi-cash"></i>
                         </div>
                     </div>
                 </div>
@@ -98,9 +98,11 @@ include __DIR__ . '/../includes/navbar.php';
         
         <!-- Transaksi Terbaru -->
         <div class="table-container">
-            <h5 class="mb-3"><i class="bi bi-clock-history me-2"></i>Transaksi Terbaru</h5>
+            <h5 class="mb-3 fw-semibold">
+                <i class="bi bi-clock-history me-2"></i>Transaksi Terbaru
+            </h5>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Plat Nomor</th>
@@ -120,9 +122,9 @@ include __DIR__ . '/../includes/navbar.php';
                                 <td><?= formatTanggal($row['waktu_masuk'], true) ?></td>
                                 <td>
                                     <?php if ($row['status'] == 'masuk'): ?>
-                                        <span class="badge bg-success">Parkir</span>
+                                        <span class="badge badge-dark">Parkir</span>
                                     <?php else: ?>
-                                        <span class="badge bg-secondary">Keluar</span>
+                                        <span class="badge badge-light">Selesai</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

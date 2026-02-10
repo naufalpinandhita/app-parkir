@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['admin']);
 
-$pageTitle = 'Tarif Parkir - ' . APP_NAME;
+$pageTitle = 'Tarif Parkir';
 
 // Handle Actions
 $action = $_GET['action'] ?? 'list';
@@ -76,6 +76,7 @@ if ($action == 'edit' && $id) {
 $tarifList = mysqli_query($conn, "SELECT * FROM tb_tarif ORDER BY id_tarif ASC");
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 

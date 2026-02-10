@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['owner']);
 
-$pageTitle = 'Laporan Transaksi - ' . APP_NAME;
+$pageTitle = 'Laporan';
 
 // Filter periode
 $filterPeriode = $_GET['periode'] ?? 'hari';
@@ -94,6 +94,7 @@ for ($i = 6; $i >= 0; $i--) {
 }
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 

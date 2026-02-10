@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['petugas']);
 
-$pageTitle = 'Transaksi Parkir - ' . APP_NAME;
+$pageTitle = 'Transaksi Parkir';
 
 // Handle Actions
 $action = $_GET['action'] ?? 'list';
@@ -131,6 +131,7 @@ $totalParkir = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total 
 $transaksiHariIni = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_transaksi WHERE DATE(waktu_masuk) = CURDATE()"))['total'];
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 

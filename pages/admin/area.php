@@ -7,7 +7,7 @@
 require_once __DIR__ . '/../../includes/auth_check.php';
 requireRole(['admin']);
 
-$pageTitle = 'Area Parkir - ' . APP_NAME;
+$pageTitle = 'Area Parkir';
 
 // Handle Actions
 $action = $_GET['action'] ?? 'list';
@@ -70,6 +70,7 @@ if ($action == 'edit' && $id) {
 $areaList = mysqli_query($conn, "SELECT * FROM tb_area_parkir ORDER BY id_area ASC");
 
 include __DIR__ . '/../../includes/header.php';
+include __DIR__ . '/../../includes/sidebar.php';
 include __DIR__ . '/../../includes/navbar.php';
 ?>
 
