@@ -35,6 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
             
+            // Simpan area assignment untuk petugas
+            if ($user['role'] == 'petugas' && $user['id_area']) {
+                $_SESSION['id_area'] = $user['id_area'];
+                $areaResult = mysqli_query($conn, "SELECT nama_area FROM tb_area_parkir WHERE id_area = {$user['id_area']}");
+                $areaData = mysqli_fetch_assoc($areaResult);
+                $_SESSION['nama_area'] = $areaData['nama_area'] ?? '';
+            } else {
+                $_SESSION['id_area'] = null;
+                $_SESSION['nama_area'] = '';
+            }
+            
             // Log aktivitas
             $logQuery = "INSERT INTO tb_log_aktivitas (id_user, aktivitas) VALUES ({$user['id_user']}, 'Login')";
             mysqli_query($conn, $logQuery);

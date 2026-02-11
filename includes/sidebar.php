@@ -177,6 +177,9 @@ $userName = currentUser('nama_lengkap');
             <div class="sidebar-user-info">
                 <div class="sidebar-user-name"><?= escape($userName) ?></div>
                 <span class="sidebar-user-role"><?= ucfirst($userRole) ?></span>
+                <?php if ($userRole == 'petugas' && !empty($_SESSION['nama_area'])): ?>
+                <br><small class="text-muted" style="font-size: 11px;"><?= escape($_SESSION['nama_area']) ?></small>
+                <?php endif; ?>
             </div>
         </div>
     </div>

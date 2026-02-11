@@ -130,6 +130,7 @@ include __DIR__ . '/../../includes/navbar.php';
                             <th>Jenis</th>
                             <th>Warna</th>
                             <th>Pemilik</th>
+                            <th>Status</th>
                             <th width="150">Aksi</th>
                         </tr>
                     </thead>
@@ -152,6 +153,13 @@ include __DIR__ . '/../../includes/navbar.php';
                             <td><?= escape($row['warna']) ?: '-' ?></td>
                             <td><?= escape($row['pemilik']) ?: '-' ?></td>
                             <td>
+                                <?php if ($row['status_parkir'] == 'parkir'): ?>
+                                    <span class="badge bg-success">Parkir</span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Tidak Parkir</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
                                 <a href="?action=edit&id=<?= $row['id_kendaraan'] ?>" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i>
                                 </a>
@@ -163,7 +171,7 @@ include __DIR__ . '/../../includes/navbar.php';
                         <?php endwhile; ?>
                         <?php if ($totalData == 0): ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">Belum ada data kendaraan</td>
+                            <td colspan="7" class="text-center text-muted py-4">Belum ada data kendaraan</td>
                         </tr>
                         <?php endif; ?>
                     </tbody>

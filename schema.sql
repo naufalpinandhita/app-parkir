@@ -1,28 +1,14 @@
 -- =============================================
--- APLIKASI PARKIR - DATABASE SCHEMA
+-- APLIKASI PARKIR VIP - DATABASE SCHEMA
 -- =============================================
--- Dibuat berdasarkan ERD untuk uji kompetensi
+-- Sistem Parkir VIP dengan registrasi kendaraan
 -- 3 Level User: Admin, Petugas, Owner
+-- Petugas di-assign per area parkir
 -- =============================================
 
 -- Membuat database (opsional, uncomment jika diperlukan)
 -- CREATE DATABASE IF NOT EXISTS db_parkir;
 -- USE db_parkir;
-
--- =============================================
--- TABEL: tb_user
--- Deskripsi: Menyimpan data pengguna sistem
--- Level: admin, petugas, owner
--- =============================================
-CREATE TABLE tb_user (
-    id_user INT(11) NOT NULL AUTO_INCREMENT,
-    nama_lengkap VARCHAR(50) NOT NULL,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(100) NOT NULL,
-    role ENUM('admin', 'petugas', 'owner') NOT NULL,
-    status_aktif TINYINT(1) NOT NULL DEFAULT 1,
-    PRIMARY KEY (id_user)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- =============================================
 -- TABEL: tb_tarif
@@ -48,8 +34,29 @@ CREATE TABLE tb_area_parkir (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- =============================================
+-- TABEL: tb_user
+-- Deskripsi: Menyimpan data pengguna sistem
+-- Level: admin, petugas, owner
+-- Petugas memiliki area parkir yang di-assign
+-- =============================================
+CREATE TABLE tb_user (
+    id_user INT(11) NOT NULL AUTO_INCREMENT,
+    nama_lengkap VARCHAR(50) NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role ENUM('admin', 'petugas', 'owner') NOT NULL,
+    status_aktif TINYINT(1) NOT NULL DEFAULT 1,
+    id_area INT(11) NULL,
+    PRIMARY KEY (id_user),
+    CONSTRAINT fk_user_area
+        FOREIGN KEY (id_area) REFERENCES tb_area_parkir(id_area)
+        ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- =============================================
 -- TABEL: tb_kendaraan
--- Deskripsi: Menyimpan data kendaraan yang terdaftar
+-- Deskripsi: Menyimpan data kendaraan yang terdaftar (VIP)
+-- Kendaraan harus didaftarkan oleh admin sebelum bisa parkir
 -- =============================================
 CREATE TABLE tb_kendaraan (
     id_kendaraan INT(11) NOT NULL AUTO_INCREMENT,
@@ -57,6 +64,7 @@ CREATE TABLE tb_kendaraan (
     jenis_kendaraan VARCHAR(20) NOT NULL,
     warna VARCHAR(20),
     pemilik VARCHAR(100),
+    status_parkir ENUM('tidak_parkir', 'parkir') NOT NULL DEFAULT 'tidak_parkir',
     id_user INT(11),
     PRIMARY KEY (id_kendaraan),
     CONSTRAINT fk_kendaraan_user 
@@ -113,6 +121,7 @@ CREATE TABLE tb_log_aktivitas (
 -- INDEX UNTUK OPTIMASI QUERY
 -- =============================================
 CREATE INDEX idx_kendaraan_plat ON tb_kendaraan(plat_nomor);
+CREATE INDEX idx_kendaraan_status ON tb_kendaraan(status_parkir);
 CREATE INDEX idx_transaksi_waktu ON tb_transaksi(waktu_masuk, waktu_keluar);
 CREATE INDEX idx_transaksi_status ON tb_transaksi(status);
 CREATE INDEX idx_log_waktu ON tb_log_aktivitas(waktu_aktivitas);
@@ -128,14 +137,14 @@ INSERT INTO tb_tarif (jenis_kendaraan, tarif_per_jam) VALUES
 ('mobil', 5000),
 ('lainnya', 3000);
 
--- Insert user admin default (password: admin123 - HARUS di-hash di aplikasi)
-INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif) VALUES
-('Administrator', 'admin', 'admin123', 'admin', 1),
-('Petugas Parkir', 'petugas', 'petugas123', 'petugas', 1),
-('Owner Parkir', 'owner', 'owner123', 'owner', 1);
-
 -- Insert area parkir default
 INSERT INTO tb_area_parkir (nama_area, kapasitas, terisi) VALUES
 ('Area A - Motor', 50, 0),
 ('Area B - Mobil', 30, 0),
 ('Area C - VIP', 10, 0);
+
+-- Insert user default (password plaintext)
+INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif, id_area) VALUES
+('Administrator', 'admin', 'admin123', 'admin', 1, NULL),
+('Petugas Area A', 'petugas', 'petugas123', 'petugas', 1, 1),
+('Owner Parkir', 'owner', 'owner123', 'owner', 1, NULL);

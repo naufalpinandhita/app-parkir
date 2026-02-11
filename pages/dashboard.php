@@ -11,15 +11,26 @@ $userRole = currentUser('role');
 
 // Query statistik
 $totalKendaraan = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_kendaraan"))['total'];
-$kendaraanParkir = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_transaksi WHERE status = 'masuk'"))['total'];
-$transaksiHariIni = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_transaksi WHERE DATE(waktu_masuk) = CURDATE()"))['total'];
-$pendapatanHariIni = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COALESCE(SUM(biaya_total), 0) as total FROM tb_transaksi WHERE DATE(waktu_keluar) = CURDATE() AND status = 'keluar'"))['total'];
+
+// Filter berdasarkan area jika petugas
+$areaFilter = '';
+$areaFilterAlias = '';
+$id_area_user = $_SESSION['id_area'] ?? null;
+if ($userRole == 'petugas' && $id_area_user) {
+    $areaFilter = " AND id_area = $id_area_user";
+    $areaFilterAlias = " AND t.id_area = $id_area_user";
+}
+
+$kendaraanParkir = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_transaksi WHERE status = 'masuk'" . $areaFilter))['total'];
+$transaksiHariIni = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM tb_transaksi WHERE DATE(waktu_masuk) = CURDATE()" . $areaFilter))['total'];
+$pendapatanHariIni = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COALESCE(SUM(biaya_total), 0) as total FROM tb_transaksi WHERE DATE(waktu_keluar) = CURDATE() AND status = 'keluar'" . $areaFilter))['total'];
 
 // Query transaksi terbaru
 $recentQuery = "SELECT t.*, k.plat_nomor, k.jenis_kendaraan, a.nama_area 
                 FROM tb_transaksi t 
                 JOIN tb_kendaraan k ON t.id_kendaraan = k.id_kendaraan 
                 JOIN tb_area_parkir a ON t.id_area = a.id_area 
+                WHERE 1=1" . $areaFilterAlias . "
                 ORDER BY t.waktu_masuk DESC LIMIT 5";
 $recentTransaksi = mysqli_query($conn, $recentQuery);
 
@@ -44,7 +55,7 @@ include __DIR__ . '/../includes/navbar.php';
                     <div class="card-body">
                         <div class="stat-content">
                             <div class="stat-value"><?= $totalKendaraan ?></div>
-                            <div class="stat-label">TOTAL KENDARAAN</div>
+                            <div class="stat-label">KENDARAAN TERDAFTAR</div>
                         </div>
                         <div class="stat-icon">
                             <i class="bi bi-car-front"></i>

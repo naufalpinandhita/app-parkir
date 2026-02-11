@@ -15,6 +15,9 @@ $id = $_GET['id'] ?? null;
 $error = '';
 $success = '';
 
+// Ambil daftar area parkir untuk dropdown
+$areaListQuery = mysqli_query($conn, "SELECT * FROM tb_area_parkir ORDER BY nama_area");
+
 // Proses Form
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_lengkap = mysqli_real_escape_string($conn, $_POST['nama_lengkap']);
@@ -22,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $role = mysqli_real_escape_string($conn, $_POST['role']);
     $status_aktif = isset($_POST['status_aktif']) ? 1 : 0;
+    $id_area = ($role == 'petugas' && !empty($_POST['id_area'])) ? (int) $_POST['id_area'] : 'NULL';
     
     if ($_POST['form_action'] == 'add') {
         // Cek username unik
@@ -29,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (mysqli_num_rows($check) > 0) {
             $error = 'Username sudah digunakan!';
         } else {
-            $query = "INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif) 
-                      VALUES ('$nama_lengkap', '$username', '$password', '$role', $status_aktif)";
+            $query = "INSERT INTO tb_user (nama_lengkap, username, password, role, status_aktif, id_area) 
+                      VALUES ('$nama_lengkap', '$username', '$password', '$role', $status_aktif, $id_area)";
             if (mysqli_query($conn, $query)) {
                 // Log aktivitas
                 $logQuery = "INSERT INTO tb_log_aktivitas (id_user, aktivitas) VALUES ({$_SESSION['user_id']}, 'Menambah user: $username')";
@@ -53,10 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Jika password kosong, jangan update password
             if (empty($password)) {
                 $query = "UPDATE tb_user SET nama_lengkap = '$nama_lengkap', username = '$username', 
-                          role = '$role', status_aktif = $status_aktif WHERE id_user = $id";
+                          role = '$role', status_aktif = $status_aktif, id_area = $id_area WHERE id_user = $id";
             } else {
                 $query = "UPDATE tb_user SET nama_lengkap = '$nama_lengkap', username = '$username', 
-                          password = '$password', role = '$role', status_aktif = $status_aktif WHERE id_user = $id";
+                          password = '$password', role = '$role', status_aktif = $status_aktif, id_area = $id_area WHERE id_user = $id";
             }
             
             if (mysqli_query($conn, $query)) {
@@ -99,8 +103,11 @@ if ($action == 'edit' && $id) {
     $userData = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM tb_user WHERE id_user = $id"));
 }
 
-// Ambil semua user (untuk list)
-$users = mysqli_query($conn, "SELECT * FROM tb_user ORDER BY id_user DESC");
+// Ambil semua user (untuk list) dengan info area
+$users = mysqli_query($conn, "SELECT u.*, a.nama_area 
+                               FROM tb_user u 
+                               LEFT JOIN tb_area_parkir a ON u.id_area = a.id_area 
+                               ORDER BY u.id_user DESC");
 
 include __DIR__ . '/../../includes/header.php';
 include __DIR__ . '/../../includes/sidebar.php';
@@ -139,6 +146,7 @@ include __DIR__ . '/../../includes/navbar.php';
                             <th>Nama Lengkap</th>
                             <th>Username</th>
                             <th>Role</th>
+                            <th>Area</th>
                             <th>Status</th>
                             <th width="150">Aksi</th>
                         </tr>
@@ -159,6 +167,15 @@ include __DIR__ . '/../../includes/navbar.php';
                                 };
                                 ?>
                                 <span class="badge <?= $badgeClass ?>"><?= ucfirst($row['role']) ?></span>
+                            </td>
+                            <td>
+                                <?php if ($row['role'] == 'petugas' && $row['nama_area']): ?>
+                                    <span class="badge bg-info"><?= escape($row['nama_area']) ?></span>
+                                <?php elseif ($row['role'] == 'petugas'): ?>
+                                    <span class="text-muted fst-italic">Belum di-assign</span>
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <?php if ($row['status_aktif']): ?>
@@ -223,12 +240,29 @@ include __DIR__ . '/../../includes/navbar.php';
                 
                 <div class="mb-3">
                     <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                    <select class="form-select" id="role" name="role" required>
+                    <select class="form-select" id="role" name="role" required onchange="toggleAreaField()">
                         <option value="">-- Pilih Role --</option>
                         <option value="admin" <?= ($userData['role'] ?? '') == 'admin' ? 'selected' : '' ?>>Admin</option>
                         <option value="petugas" <?= ($userData['role'] ?? '') == 'petugas' ? 'selected' : '' ?>>Petugas</option>
                         <option value="owner" <?= ($userData['role'] ?? '') == 'owner' ? 'selected' : '' ?>>Owner</option>
                     </select>
+                </div>
+                
+                <!-- Field Area Parkir (hanya untuk petugas) -->
+                <div class="mb-3" id="area-field" style="display: <?= ($userData['role'] ?? '') == 'petugas' ? 'block' : 'none' ?>;">
+                    <label for="id_area" class="form-label">Area Parkir <span class="text-danger">*</span></label>
+                    <select class="form-select" id="id_area" name="id_area">
+                        <option value="">-- Pilih Area --</option>
+                        <?php 
+                        mysqli_data_seek($areaListQuery, 0);
+                        while ($area = mysqli_fetch_assoc($areaListQuery)): 
+                        ?>
+                        <option value="<?= $area['id_area'] ?>" <?= ($userData['id_area'] ?? '') == $area['id_area'] ? 'selected' : '' ?>>
+                            <?= escape($area['nama_area']) ?> (Kapasitas: <?= $area['kapasitas'] ?>)
+                        </option>
+                        <?php endwhile; ?>
+                    </select>
+                    <div class="form-text">Pilih area yang menjadi tanggung jawab petugas ini</div>
                 </div>
                 
                 <div class="mb-4">
@@ -251,5 +285,25 @@ include __DIR__ . '/../../includes/navbar.php';
     </div>
 </div>
 </div>
+
+<script>
+function toggleAreaField() {
+    const role = document.getElementById('role').value;
+    const areaField = document.getElementById('area-field');
+    const areaSelect = document.getElementById('id_area');
+    
+    if (role === 'petugas') {
+        areaField.style.display = 'block';
+        areaSelect.setAttribute('required', 'required');
+    } else {
+        areaField.style.display = 'none';
+        areaSelect.removeAttribute('required');
+        areaSelect.value = '';
+    }
+}
+
+// Run on page load
+document.addEventListener('DOMContentLoaded', toggleAreaField);
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
